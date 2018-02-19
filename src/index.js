@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { yxc } from '@yanux/coordinator'
+import { Coordinator } from '@yanux/coordinator'
 
 function component() {
     var element = document.createElement('div');
@@ -9,3 +9,5 @@ function component() {
 }
  
 document.body.appendChild(component());
+
+var coordinator = new Coordinator("ws://localhost:6020/deepstream", { username: "john", password: "doe" });

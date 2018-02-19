@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {about, Coordinator} from '@yanux/coordinator'
+import { yxc } from '@yanux/coordinator'
 
 function component() {
     var element = document.createElement('div');

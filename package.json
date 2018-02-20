@@ -13,7 +13,8 @@
   "author": "Pedro Albuquerque Santos <pedro@albuquerques.net> (https://pedro.albuquerques.net)",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@yanux/coordinator": "file:../Coordinator"
+    "@yanux/coordinator": "^1.0.0",
+    "jquery": "^3.3.1"
   },
   "devDependencies": {
     "http-server": "^0.11.1",

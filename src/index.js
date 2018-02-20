@@ -1,4 +1,17 @@
-import { Coordinator } from '@yanux/coordinator' 
-document.body.appendChild(component());
+import $ from 'jquery'
+import { Coordinator, DeepstreamCoordinator, User, App } from '@yanux/coordinator'
 
-var coordinator = new Coordinator("ws://localhost:6020/deepstream", { username: "john", password: "doe" });
+var coordinator = new DeepstreamCoordinator("ws://localhost:6020/deepstream", new App("demo"), new User("jonhdoe", { password: "password123456" }));
+
+coordinator.subscribeUiState(function(state){
+    console.log("State Changed: "+state)
+    $(".square").css("background-color", state["squareColor"]);
+});
+
+$(".red-button").click(function() {
+    coordinator.setUiState({squareColor: "red"})
+});
+
+$(".blue-button").click(function() {
+    coordinator.setUiState({squareColor: "blue"})
+});

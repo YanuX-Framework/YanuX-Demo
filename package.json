@@ -5,8 +5,8 @@
   "repository": "github:YanuX-Framework/YanuX-Demo",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "serve": "npx http-server ./dist -p 8081",
+    "build": "npx webpack",
+    "start": "npx http-server ./dist -p 8081",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

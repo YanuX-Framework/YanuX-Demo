@@ -5,21 +5,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Chrome Debug YanuX Demo",
+            "name": "Launch Chrome Debug YanuX Demo",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:8081",
-            "webRoot": "${workspaceRoot}",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceRoot}/dist",
             "sourceMaps": true,
             "trace": true,
             "sourceMapPathOverrides": {
-                "webpack:///../*": "${webRoot}/../*",
-                "webpack:///./~/*": "${webRoot}/node_modules/*",
-                "webpack:///./*": "${webRoot}/*",
-                "webpack:///*": "*",
-                "webpack:///src/*": "${webRoot}/*",
-                "meteor://💻app/*": "${webRoot}/*"
-            }
-        }
+                "webpack:///*": "${webRoot}/../*",
+                "webpack:///./*": "${webRoot}/../*",
+                "webpack:///src/*": "${webRoot}/../src/*",
+                "webpack:///./~/*": "${webRoot}/../node_modules/*"
+            },
+            "runtimeExecutable": "C:\\Program Files (x86)\\Google\\Chrome Beta\\Application\\chrome.exe"
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach Chrome Debug YanuX Demo",
+            "port": 9222,
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceRoot}/dist",
+            "sourceMaps": true,
+            "trace": true,
+            "sourceMapPathOverrides": {
+                "webpack:///*": "${webRoot}/../*",
+                "webpack:///./*": "${webRoot}/../*",
+                "webpack:///src/*": "${webRoot}/../src/*",
+                "webpack:///./~/*": "${webRoot}/../node_modules/*"
+            },
+        },
     ]
 }

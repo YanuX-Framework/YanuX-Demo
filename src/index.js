@@ -1,17 +1,33 @@
-import $ from 'jquery'
-import { Coordinator, DeepstreamCoordinator, User, App } from '@yanux/coordinator'
+import { App, FeathersCoordinator, User } from '@yanux/coordinator';
+import $ from 'jquery';
 
-var coordinator = new DeepstreamCoordinator("ws://localhost:6020/deepstream", new App("demo"), new User("jonhdoe", { password: "password123456" }));
+let url = "http://localhost:3030";
+let app = new App("demo");
+let user = new User("pedro@albuquerques.net", "topsecret");
+let coordinator = new FeathersCoordinator(url, app, user);
 
-coordinator.subscribeUiState(function(state){
-    console.log("State Changed: "+state)
-    $(".square").css("background-color", state["squareColor"]);
+function setSquareColor(color) {
+    if (color) {
+        $(".square").css("background-color", color)
+    }
+}
+
+coordinator.init().then(data => {
+    console.log('State:', data);
+    setSquareColor(data["squareColor"]);
 });
 
-$(".red-button").click(function() {
-    coordinator.setUiState({squareColor: "red"})
+coordinator.subscribe(data => {
+    console.log('Data Changed: ', data);
+    setSquareColor(data["squareColor"]);
+})
+
+$(".red-button").click(function (evt) {
+    console.log("Clicked Red Button:", evt);
+    coordinator.setData({ squareColor: "red" });
 });
 
-$(".blue-button").click(function() {
-    coordinator.setUiState({squareColor: "blue"})
+$(".blue-button").click(function (evt) {
+    console.log("Clicked Blue Button:", evt);
+    coordinator.setData({ squareColor: "blue" });
 });

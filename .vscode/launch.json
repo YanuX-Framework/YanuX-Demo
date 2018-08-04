@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Chrome Debug YanuX Demo",
+            "name": "Debug Chrome YanuX Demo",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:3001",
@@ -23,7 +23,7 @@
         {
             "type": "chrome",
             "request": "attach",
-            "name": "Attach Chrome Debug YanuX Demo",
+            "name": "Attach Debug Chrome YanuX Demo",
             "port": 9222,
             "url": "http://localhost:3001",
             "webRoot": "${workspaceRoot}/dist",

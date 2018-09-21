@@ -13,7 +13,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "Pedro Albuquerque Santos <pedro@albuquerques.net> (https://pedro.albuquerques.net)",
+  "author": {
+    "name": "Pedro Albuquerque Santos",
+    "email": "pedro@albuquerques.net",
+    "url": "https://pedro.albuquerques.net"
+  },
   "license": "AGPL-3.0",
   "dependencies": {
     "@yanux/coordinator": "file:../Coordinator",

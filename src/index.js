@@ -1,9 +1,8 @@
-import { App, FeathersCoordinator, User } from '@yanux/coordinator';
+import { Client, FeathersCoordinator, Credentials } from '@yanux/coordinator';
 import $ from 'jquery';
 import * as queryString from 'query-string';
 
 const params = queryString.parse(location.hash);
-let url = "http://localhost:3030";
 
 function yxDisplay(displayClasses, hiddenClasses) {
     if (hiddenClasses) {
@@ -18,11 +17,15 @@ yxDisplay(params.displayClasses || null, params.hiddenClasses || "yx-view, yx-co
 /** ------------------------------------------------------------------------ **/
 /** -------------------------- YanuX Coordinator --------------------------- **/
 /** ------------------------------------------------------------------------ **/
-let app = new App(params.app || "demo");
-let user = new User(params.username || "test_user_0@yanux.org", params.password || "topsecret");
-$("#welcome").append(user.username);
+const credentials = new Credentials("local", [params.username || "test_user_0@yanux.org", params.password || "topsecret"]);
+$("#welcome").append(credentials[0]);
 
-let coordinator = new FeathersCoordinator(params.url || url, app, user);
+const coordinator = new FeathersCoordinator(
+    params.url || "http://localhost:3002",
+    params.app || "demo",
+    credentials
+);
+
 function setSquareColor(color) {
     if (color) {
         $(".square").css("background-color", color)

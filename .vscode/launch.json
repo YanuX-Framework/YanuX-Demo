@@ -35,6 +35,6 @@
                 "webpack:///src/*": "${webRoot}/../src/*",
                 "webpack:///./~/*": "${webRoot}/../node_modules/*"
             },
-        },
+        }
     ]
 }

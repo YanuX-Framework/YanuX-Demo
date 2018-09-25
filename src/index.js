@@ -17,7 +17,11 @@ yxDisplay(params.displayClasses || null, params.hiddenClasses || "yx-view, yx-co
 /** ------------------------------------------------------------------------ **/
 /** -------------------------- YanuX Coordinator --------------------------- **/
 /** ------------------------------------------------------------------------ **/
-const credentials = new Credentials("local", [params.username || "test_user_0@yanux.org", params.password || "topsecret"]);
+//const credentials = new Credentials("local", [params.username || "test_user_0@yanux.org", params.password || "topsecret"]);
+const credentials = new Credentials("yanux", [
+    "tZ0RxsvLgAe6KGhMAZIV8wP0VZRJSKzY9OFBcErLSHlIUdIuNyMFvqIZDuCKQXidqgTYc7GZMMSHX8HZBnF6a6sLMDtNdnfGyDGErrKX0w9u0i2Qc0xtYzfVLzBKezlpoxUqKaaY1hQWrdfcDyiq96sd0qyP9uRZlNyKtx8jMSWuAOcZKbi9cZYLjdeBcS7gyvS0NSRC56HodQYTQglc2yWLNqjHPDs6or2tjrNCRjb7ofyBZeVVgk031mPyr7uI",
+    "yanux-ips-desktop-client"
+]);
 $("#welcome").append(credentials[0]);
 
 const coordinator = new FeathersCoordinator(

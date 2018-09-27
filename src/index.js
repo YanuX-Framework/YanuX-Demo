@@ -26,8 +26,8 @@ $("#welcome").append(credentials[0]);
 
 const coordinator = new FeathersCoordinator(
     params.url || "http://localhost:3002",
-    params.app || "demo",
-    credentials
+    credentials,
+    params.app || "yanux-demo"
 );
 
 function setSquareColor(color) {

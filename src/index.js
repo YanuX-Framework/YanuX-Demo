@@ -67,7 +67,7 @@ function initCoordinator(coordinator) {
             setCurrentColorText(data["squareColor"]);
         }
     }).catch(e => {
-        console.log(e);
+        console.error(e);
         alert('Try to log back in!')
         coordinator.logout();
         initUi(params);

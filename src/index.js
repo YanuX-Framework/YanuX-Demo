@@ -81,7 +81,8 @@ function main() {
     const params = queryString.parse(location.hash);
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
-        params.url || "http://localhost:3002",
+        params.brokerUrl || "http://localhost:3002",
+        params.localDeviceUrl || "http://localhost:3003"
     );
     //window.coordinator = coordinator;
     if (coordinator.credentials) {

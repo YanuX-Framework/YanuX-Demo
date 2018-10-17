@@ -2,8 +2,19 @@ import { FeathersCoordinator, Credentials } from "@yanux/coordinator";
 import $ from "jquery";
 import * as queryString from "query-string";
 
-function initUi(params) {
-    yxDisplay(params.displayClasses || null, params.hiddenClasses || null /* "yx-view, yx-control" */);
+function initDisplay(params) {
+    const displayClasses = params.displayClasses || "yx-view, yx-control";
+    const hiddenClasses = params.hiddenClasses || "yx-view, yx-control";
+    if (hiddenClasses) {
+        hiddenClasses.split(",").forEach(c => $("." + c.trim()).css("display", "none"));
+    }
+    if (displayClasses) {
+        displayClasses.split(",").forEach(c => $("." + c.trim()).css("display", "block"));
+    }
+    $(".yx-always-visible").css("display", "block");
+}
+
+function initLogin() {
     $("#login a").text("Login");
     $("#login a").attr(
         "href",
@@ -21,15 +32,7 @@ function setCurrentColorText(color) {
         $("#current-color").text(color);
     }
 }
-function yxDisplay(displayClasses, hiddenClasses) {
-    if (hiddenClasses) {
-        hiddenClasses.split(",").forEach(c => $("." + c.trim()).css("display", "none"));
-    }
-    if (displayClasses) {
-        displayClasses.split(",").forEach(c => $("." + c.trim()).css("display", "block"));
-    }
-    $(".yx-always-visible").css("display", "block");
-}
+
 
 function initCoordinator(coordinator) {
     coordinator.init().then(data => {
@@ -70,7 +73,8 @@ function initCoordinator(coordinator) {
         console.error(e);
         alert('Try to log back in!')
         coordinator.logout();
-        initUi(params);
+        initDisplay(params);
+        initLogin();
     });
 }
 
@@ -85,6 +89,7 @@ function main() {
         params.localDeviceUrl || "http://localhost:3003"
     );
     //window.coordinator = coordinator;
+    initDisplay(params);
     if (coordinator.credentials) {
         initCoordinator(coordinator);
     } else if (params.access_token) {
@@ -94,7 +99,7 @@ function main() {
         ]);
         initCoordinator(coordinator);
     } else {
-        initUi(params);
+        initLogin();
     }
 }
 

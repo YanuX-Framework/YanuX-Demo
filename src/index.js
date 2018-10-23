@@ -65,6 +65,7 @@ function initCoordinator(coordinator) {
             $("#login a").click(() => {
                 coordinator.logout();
                 $("#login a").text("Login");
+                setTimeout(initLogin, 100);
             })
             setSquareColor(data["squareColor"]);
             setCurrentColorText(data["squareColor"]);
@@ -83,12 +84,15 @@ function initCoordinator(coordinator) {
 /** ------------------------------------------------------------------------ **/
 function main() {
     const params = queryString.parse(location.hash);
+
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
         params.brokerUrl || "http://localhost:3002",
         params.localDeviceUrl || "http://localhost:3003"
     );
-    //window.coordinator = coordinator;
+    if (!params.access_token) {
+        sessionStorage.setItem('hash', window.location.hash);
+    }
     initDisplay(params);
     if (coordinator.credentials) {
         initCoordinator(coordinator);
@@ -97,7 +101,10 @@ function main() {
             params.access_token,
             params.app || "yanux-demo-app"
         ]);
-        initCoordinator(coordinator);
+        coordinator.init().then(data => {
+            location.hash = sessionStorage.getItem('hash');
+            location.reload();
+        });
     } else {
         initLogin();
     }

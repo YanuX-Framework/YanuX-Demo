@@ -33,14 +33,13 @@ function setCurrentColorText(color) {
     }
 }
 
-
 function initCoordinator(coordinator) {
     coordinator.init().then(data => {
         coordinator.subscribe(data => {
             console.log("Data Changed:", data);
             setSquareColor(data["squareColor"]);
             setCurrentColorText(data["squareColor"]);
-        })
+        });
 
         $(".red-button").click(function (evt) {
             console.log("Clicked Red Button:", evt);

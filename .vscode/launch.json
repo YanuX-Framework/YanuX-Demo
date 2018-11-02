@@ -8,7 +8,7 @@
             "name": "Debug Chrome YanuX Demo",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:3001",
+            "url": "http://localhost:3004",
             "webRoot": "${workspaceRoot}/dist",
             "sourceMaps": true,
             "trace": true,
@@ -18,14 +18,13 @@
                 "webpack:///src/*": "${webRoot}/../src/*",
                 "webpack:///./~/*": "${webRoot}/../node_modules/*"
             },
-            "runtimeExecutable": "C:\\Program Files (x86)\\Google\\Chrome Beta\\Application\\chrome.exe"
         },
         {
             "type": "chrome",
             "request": "attach",
             "name": "Attach Debug Chrome YanuX Demo",
             "port": 9222,
-            "url": "http://localhost:3001",
+            "url": "http://localhost:3004",
             "webRoot": "${workspaceRoot}/dist",
             "sourceMaps": true,
             "trace": true,

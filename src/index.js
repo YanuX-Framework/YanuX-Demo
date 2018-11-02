@@ -1,16 +1,39 @@
 import { FeathersCoordinator, Credentials } from "@yanux/coordinator";
 import $ from "jquery";
+import _ from "lodash";
 import * as queryString from "query-string";
+
+window.$ = $;
+const defaultComponentsConfig = {
+    view: false,
+    control: false
+}
+window.defaultComponentsConfig = defaultComponentsConfig;
 
 function initDisplay(params) {
     const displayClasses = params.displayClasses || "yx-view, yx-control";
     const hiddenClasses = params.hiddenClasses || "yx-view, yx-control";
-    if (hiddenClasses) {
-        hiddenClasses.split(",").forEach(c => $("." + c.trim()).css("display", "none"));
+
+    hiddenClasses.split(",").forEach(c => {
+        $("." + c.trim()).css("display", "none");
+    });
+
+    displayClasses.split(",").forEach(c => {
+        $("." + c.trim()).css("display", "block")
+    });
+
+    if ($(".yx-view").css("display") === 'block') {
+        defaultComponentsConfig.view = true;
+    } else {
+        defaultComponentsConfig.view = false;
     }
-    if (displayClasses) {
-        displayClasses.split(",").forEach(c => $("." + c.trim()).css("display", "block"));
+
+    if ($(".yx-control").css("display") === 'block') {
+        defaultComponentsConfig.control = true;
+    } else {
+        defaultComponentsConfig.control = false;
     }
+
     $(".yx-always-visible").css("display", "block");
 }
 
@@ -35,10 +58,53 @@ function setCurrentColorText(color) {
 
 function initCoordinator(coordinator) {
     coordinator.init().then(data => {
-        coordinator.subscribe(data => {
+        coordinator.subscribeResource(data => {
             console.log("Data Changed:", data);
             setSquareColor(data["squareColor"]);
             setCurrentColorText(data["squareColor"]);
+        });
+
+        coordinator.subscribeProxemics(proxemics => {
+            const localDeviceUuid = coordinator.device.deviceUuid;
+            console.log("Proxemics:", proxemics);
+            const componentsDistribution = _.cloneDeep(proxemics);
+            let componentsConfig;
+            if (proxemics[localDeviceUuid]) {
+                const viewAndControlDevices = _.pickBy(proxemics, caps => {
+                    return caps.view === true && caps.control === true
+                });
+                const viewOnlyDevices = _.pickBy(proxemics, caps => {
+                    return caps.view === true && caps.control === false
+                });
+                const controlOnlyDevices = _.pickBy(proxemics, caps => {
+                    return caps.view === false && caps.control === true
+                });
+                if (!_.isEmpty(viewOnlyDevices)) {
+                    for (let deviceUuid in viewAndControlDevices) {
+                        componentsDistribution[deviceUuid].view = false;
+                    }
+                }
+                if (!_.isEmpty(controlOnlyDevices)) {
+                    for (let deviceUuid in viewAndControlDevices) {
+                        componentsDistribution[deviceUuid].control = false;
+                    }
+                }
+                componentsConfig = componentsDistribution[localDeviceUuid];
+            } else {
+                componentsConfig = defaultComponentsConfig;
+            }
+            console.log("Components Config:",componentsConfig);
+            if(componentsConfig.view) {
+                $(".yx-view").css("display","block");
+            } else {
+                $(".yx-view").css("display","none");
+            }
+            if(componentsConfig.control) {
+                $(".yx-control").css("display","block");
+            } else {
+                $(".yx-control").css("display","none");
+            }
+            $(".yx-always-visible").css("display", "block");
         });
 
         $(".red-button").click(function (evt) {

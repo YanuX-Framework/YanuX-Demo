@@ -41,7 +41,7 @@ function initLogin() {
     $("#login a").text("Login");
     $("#login a").attr(
         "href",
-        "http://localhost:3001/oauth2/authorize?client_id=yanux-demo-app&response_type=token&redirect_uri=" + window.location.href
+        `http://${window.location.hostname}:3001/oauth2/authorize?client_id=yanux-demo-app&response_type=token&redirect_uri=${window.location.href}`
     );
 }
 
@@ -152,7 +152,7 @@ function main() {
 
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
-        params.brokerUrl || "http://localhost:3002",
+        params.brokerUrl || `http://${window.location.hostname}:3002`,
         params.localDeviceUrl || "http://localhost:3003"
     );
     if (!params.access_token) {

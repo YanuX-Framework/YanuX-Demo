@@ -56,74 +56,57 @@ function setCurrentColorText(color) {
     }
 }
 
+function processProxemics(coordinator, proxemics) {
+    const localDeviceUuid = coordinator.device.deviceUuid;
+    console.log("Proxemics:", proxemics);
+    const componentsDistribution = _.cloneDeep(proxemics);
+    let componentsConfig;
+    console.log("Local Device UUID:", localDeviceUuid);
+    if (proxemics[localDeviceUuid]) {
+        const viewAndControlDevices = _.pickBy(proxemics, caps => {
+            return caps.view === true && caps.control === true
+        });
+        const viewOnlyDevices = _.pickBy(proxemics, caps => {
+            return caps.view === true && caps.control === false
+        });
+        const controlOnlyDevices = _.pickBy(proxemics, caps => {
+            return caps.view === false && caps.control === true
+        });
+        if (!_.isEmpty(viewOnlyDevices)) {
+            for (let deviceUuid in viewAndControlDevices) {
+                componentsDistribution[deviceUuid].view = false;
+            }
+        }
+        if (!_.isEmpty(controlOnlyDevices)) {
+            for (let deviceUuid in viewAndControlDevices) {
+                componentsDistribution[deviceUuid].control = false;
+            }
+        }
+        componentsConfig = componentsDistribution[localDeviceUuid];
+    } else {
+        componentsConfig = defaultComponentsConfig;
+    }
+    console.log("Components Config:", componentsConfig);
+    if (componentsConfig.view) {
+        $(".yx-view").css("display", "block");
+    } else {
+        $(".yx-view").css("display", "none");
+    }
+    if (componentsConfig.control) {
+        $(".yx-control").css("display", "block");
+    } else {
+        $(".yx-control").css("display", "none");
+    }
+    $(".yx-always-visible").css("display", "block");
+}
+
 function initCoordinator(coordinator) {
-    coordinator.init().then(data => {
-        coordinator.subscribeResource(data => {
-            console.log("Data Changed:", data);
-            setSquareColor(data["squareColor"]);
-            setCurrentColorText(data["squareColor"]);
-        });
+    coordinator.init().then(results => {
+        let initialData = results[0];
+        let initialProxemics = results[1];
 
-        coordinator.subscribeProxemics(proxemics => {
-            const localDeviceUuid = coordinator.device.deviceUuid;
-            console.log("Proxemics:", proxemics);
-            const componentsDistribution = _.cloneDeep(proxemics);
-            let componentsConfig;
-            if (proxemics[localDeviceUuid]) {
-                const viewAndControlDevices = _.pickBy(proxemics, caps => {
-                    return caps.view === true && caps.control === true
-                });
-                const viewOnlyDevices = _.pickBy(proxemics, caps => {
-                    return caps.view === true && caps.control === false
-                });
-                const controlOnlyDevices = _.pickBy(proxemics, caps => {
-                    return caps.view === false && caps.control === true
-                });
-                if (!_.isEmpty(viewOnlyDevices)) {
-                    for (let deviceUuid in viewAndControlDevices) {
-                        componentsDistribution[deviceUuid].view = false;
-                    }
-                }
-                if (!_.isEmpty(controlOnlyDevices)) {
-                    for (let deviceUuid in viewAndControlDevices) {
-                        componentsDistribution[deviceUuid].control = false;
-                    }
-                }
-                componentsConfig = componentsDistribution[localDeviceUuid];
-            } else {
-                componentsConfig = defaultComponentsConfig;
-            }
-            console.log("Components Config:",componentsConfig);
-            if(componentsConfig.view) {
-                $(".yx-view").css("display","block");
-            } else {
-                $(".yx-view").css("display","none");
-            }
-            if(componentsConfig.control) {
-                $(".yx-control").css("display","block");
-            } else {
-                $(".yx-control").css("display","none");
-            }
-            $(".yx-always-visible").css("display", "block");
-        });
-
-        $(".red-button").click(function (evt) {
-            console.log("Clicked Red Button:", evt);
-            coordinator.setData({ squareColor: "#ff0000" });
-        });
-
-        $(".green-button").click(function (evt) {
-            console.log("Clicked Green Button:", evt);
-            coordinator.setData({ squareColor: "#00ff00" });
-        });
-
-        $(".blue-button").click(function (evt) {
-            console.log("Clicked Blue Button:", evt);
-            coordinator.setData({ squareColor: "#0000ff" });
-        });
-
-        if (data) {
-            console.log("State:", data);
+        if (initialData) {
+            console.log("Initial Data:", initialData);
             console.log("User:", coordinator.user)
             $("#welcome").append(coordinator.user.email);
             $("#login a").text("Logout");
@@ -132,15 +115,39 @@ function initCoordinator(coordinator) {
                 $("#login a").text("Login");
                 setTimeout(initLogin, 100);
             })
+            setSquareColor(initialData["squareColor"]);
+            setCurrentColorText(initialData["squareColor"]);
+        }
+
+        coordinator.subscribeResource(data => {
+            console.log("Data Changed:", data);
             setSquareColor(data["squareColor"]);
             setCurrentColorText(data["squareColor"]);
-        }
+        });
+
+        $(".red-button").click(function (evt) {
+            console.log("Clicked Red Button:", evt);
+            coordinator.setResourceData({ squareColor: "#ff0000" });
+        });
+
+        $(".green-button").click(function (evt) {
+            console.log("Clicked Green Button:", evt);
+            coordinator.setResourceData({ squareColor: "#00ff00" });
+        });
+
+        $(".blue-button").click(function (evt) {
+            console.log("Clicked Blue Button:", evt);
+            coordinator.setResourceData({ squareColor: "#0000ff" });
+        });
+
+        processProxemics(coordinator, initialProxemics);
+        coordinator.subscribeProxemics(proxemics => processProxemics(coordinator, proxemics));
     }).catch(e => {
         console.error(e);
-        alert('Try to log back in!')
         coordinator.logout();
-        initDisplay(params);
+        alert('Try to log back in!')
         initLogin();
+        initDisplay(params);
     });
 }
 
@@ -159,6 +166,7 @@ function main() {
         sessionStorage.setItem('hash', window.location.hash);
     }
     initDisplay(params);
+    initLogin();
     if (coordinator.credentials) {
         initCoordinator(coordinator);
     } else if (params.access_token) {
@@ -170,8 +178,6 @@ function main() {
             location.hash = sessionStorage.getItem('hash');
             location.reload();
         });
-    } else {
-        initLogin();
     }
 }
 

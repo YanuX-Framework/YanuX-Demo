@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "package": "npx webpack",
-    "serve": "npx http-server ./dist -p 3004",
+    "serve": "npx http-server ./dist -p 3004 -c-1",
     "watch": "npm run watch:package",
     "watch:package": "npx webpack --watch",
     "start": "npm-run-all --parallel serve watch",

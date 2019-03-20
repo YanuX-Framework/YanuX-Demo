@@ -59,45 +59,47 @@ function setCurrentColorText(color) {
 function processProxemics(coordinator, proxemics) {
     const localDeviceUuid = coordinator.device.deviceUuid;
     console.log("Proxemics:", proxemics);
+    console.log("Local Device UUID:", localDeviceUuid);
     const componentsDistribution = _.cloneDeep(proxemics);
     let componentsConfig;
-    console.log("Local Device UUID:", localDeviceUuid);
-    if (proxemics[localDeviceUuid]) {
-        const viewAndControlDevices = _.pickBy(proxemics, caps => {
-            return caps.view === true && caps.control === true
-        });
-        const viewOnlyDevices = _.pickBy(proxemics, caps => {
-            return caps.view === true && caps.control === false
-        });
-        const controlOnlyDevices = _.pickBy(proxemics, caps => {
-            return caps.view === false && caps.control === true
-        });
-        if (!_.isEmpty(viewOnlyDevices)) {
-            for (let deviceUuid in viewAndControlDevices) {
-                componentsDistribution[deviceUuid].view = false;
+    coordinator.getActiveInstances().then(activeInstances => {
+        if (proxemics[localDeviceUuid]) {
+            const viewAndControlDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === true && caps.control === true && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+            });
+            const viewOnlyDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === true && caps.control === false && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+            });
+            const controlOnlyDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === false && caps.control === true && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+            });
+            if (!_.isEmpty(viewOnlyDevices)) {
+                for (let deviceUuid in viewAndControlDevices) {
+                    componentsDistribution[deviceUuid].view = false;
+                }
             }
-        }
-        if (!_.isEmpty(controlOnlyDevices)) {
-            for (let deviceUuid in viewAndControlDevices) {
-                componentsDistribution[deviceUuid].control = false;
+            if (!_.isEmpty(controlOnlyDevices)) {
+                for (let deviceUuid in viewAndControlDevices) {
+                    componentsDistribution[deviceUuid].control = false;
+                }
             }
+            componentsConfig = componentsDistribution[localDeviceUuid];
+        } else {
+            componentsConfig = defaultComponentsConfig;
         }
-        componentsConfig = componentsDistribution[localDeviceUuid];
-    } else {
-        componentsConfig = defaultComponentsConfig;
-    }
-    console.log("Components Config:", componentsConfig);
-    if (componentsConfig.view) {
-        $(".yx-view").css("display", "block");
-    } else {
-        $(".yx-view").css("display", "none");
-    }
-    if (componentsConfig.control) {
-        $(".yx-control").css("display", "block");
-    } else {
-        $(".yx-control").css("display", "none");
-    }
-    $(".yx-always-visible").css("display", "block");
+        console.log("Components Config:", componentsConfig);
+        if (componentsConfig.view) {
+            $(".yx-view").css("display", "block");
+        } else {
+            $(".yx-view").css("display", "none");
+        }
+        if (componentsConfig.control) {
+            $(".yx-control").css("display", "block");
+        } else {
+            $(".yx-control").css("display", "none");
+        }
+        $(".yx-always-visible").css("display", "block");
+    });
 }
 
 function initCoordinator(coordinator) {
@@ -142,6 +144,10 @@ function initCoordinator(coordinator) {
 
         processProxemics(coordinator, initialProxemics);
         coordinator.subscribeProxemics(proxemics => processProxemics(coordinator, proxemics));
+        coordinator.subscribeInstances(instance => {
+            console.log('Instances', instance);
+            processProxemics(coordinator, coordinator.proxemics.state)
+        });
     }).catch(e => {
         console.error(e);
         coordinator.logout();
@@ -156,12 +162,12 @@ function initCoordinator(coordinator) {
 /** ------------------------------------------------------------------------ **/
 function main() {
     const params = queryString.parse(location.hash);
-
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
         params.brokerUrl || `http://${window.location.hostname}:3002`,
         params.localDeviceUrl || "http://localhost:3003"
     );
+    window.coordinator = coordinator;
     if (!params.access_token) {
         sessionStorage.setItem('hash', window.location.hash);
     }

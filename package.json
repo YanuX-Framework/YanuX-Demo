@@ -23,7 +23,7 @@
     "@yanux/coordinator": "^1.0.0",
     "jquery": "^3.4.0",
     "lodash": "^4.17.11",
-    "query-string": "^6.4.2"
+    "query-string": "^6.5.0"
   },
   "devDependencies": {
     "http-server": "^0.11.1",

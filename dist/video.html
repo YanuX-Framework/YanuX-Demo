@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Video Player</title>
+</head>
+
+<body>
+    <h1>Video Player</h1>
+    <iframe id="player" width="560" height="315" src="https://www.youtube.com/embed/aqz-KE-bpKQ?enablejsapi=1"
+        frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+        style="border: solid 4px #000000"></iframe>
+
+    <script type="text/javascript">
+        var tag = document.createElement('script');
+        tag.id = 'iframe-demo';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        function onPlayerReady(event) {
+            document.getElementById('player').style.borderColor = '#FF6D00';
+        }
+        function changeBorderColor(playerStatus) {
+            var color;
+            if (playerStatus == -1) {
+                color = "#37474F"; // unstarted = gray
+            } else if (playerStatus == 0) {
+                color = "#FFFF00"; // ended = yellow
+            } else if (playerStatus == 1) {
+                color = "#33691E"; // playing = green
+            } else if (playerStatus == 2) {
+                color = "#DD2C00"; // paused = red
+            } else if (playerStatus == 3) {
+                color = "#AA00FF"; // buffering = purple
+            } else if (playerStatus == 5) {
+                color = "#FF6DOO"; // video cued = orange
+            }
+            if (color) {
+                document.getElementById('player').style.borderColor = color;
+            }
+        }
+        function onPlayerStateChange(event) {
+            changeBorderColor(event.data);
+        }
+        //document.getElementById('player').src = "https://www.youtube.com/embed/FxChP7oux1E?enablejsapi=1";
+        //player = new YT.Player('player', { events: {'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } });
+    </script>
+</body>
+
+</html>

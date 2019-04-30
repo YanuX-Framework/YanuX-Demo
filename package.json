@@ -10,7 +10,7 @@
     "watch": "npm run watch:package",
     "watch:package": "npx webpack --watch",
     "start": "npm-run-all --parallel serve watch",
-    "test": "node lib/test.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": {

@@ -22,14 +22,14 @@
   "dependencies": {
     "@yanux/coordinator": "^1.0.0",
     "jquery": "^3.4.1",
-    "lodash": "^4.17.11",
-    "query-string": "^6.8.1"
+    "lodash": "^4.17.15",
+    "query-string": "^6.8.3"
   },
   "devDependencies": {
     "http-server": "^0.11.1",
     "npm-run-all": "^4.1.5",
     "source-map-loader": "^0.2.4",
-    "webpack": "^4.35.0",
-    "webpack-cli": "^3.3.5"
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8"
   }
 }

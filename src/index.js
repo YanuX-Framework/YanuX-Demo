@@ -99,7 +99,7 @@ function processProxemics(coordinator, proxemics) {
             $(".yx-control").css("display", "none");
         }
         $(".yx-always-visible").css("display", "block");
-    });
+    }).catch(console.log);
 }
 
 function initCoordinator(coordinator) {
@@ -176,14 +176,11 @@ function main() {
     if (coordinator.credentials) {
         initCoordinator(coordinator);
     } else if (params.access_token) {
-        coordinator.credentials = new Credentials("yanux", [
-            params.access_token,
-            params.app || "yanux-demo-app"
-        ]);
+        coordinator.credentials = new Credentials("yanux", [params.access_token, params.app || "yanux-demo-app"]);
         coordinator.init().then(data => {
             location.hash = sessionStorage.getItem('hash');
             location.reload();
-        });
+        }).catch(console.log);
     }
 }
 

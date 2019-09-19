@@ -63,3 +63,4 @@ typings/
 # Build files
 dist/**
 !dist/*.html
+!dist/*.css

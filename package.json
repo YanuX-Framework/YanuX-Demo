@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "package": "npx webpack",
-    "serve": "npx http-server ./dist -p 3004 -c-1",
+    "serve": "npx serve ./dist -l 3004",
     "watch": "npm run watch:package",
     "watch:package": "npx webpack --watch",
     "start": "npm-run-all --parallel serve watch",
@@ -20,7 +20,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "http-server": "^0.12.1"
+    "serve": "^11.3.0"
   },
   "devDependencies": {
     "@yanux/coordinator": "^1.0.0",

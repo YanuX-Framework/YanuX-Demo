@@ -13,6 +13,7 @@ module.exports = {
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
     ]
   },
+  stats: { warningsFilter: [/Failed to parse source map/] },
   node: {
     fs: 'empty'
   }

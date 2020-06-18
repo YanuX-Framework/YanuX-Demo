@@ -1,14 +1,12 @@
 import { FeathersCoordinator, Credentials } from "@yanux/coordinator";
 import $ from "jquery";
-import _ from "lodash";
+import { pickBy, some, isEmpty, cloneDeep, omit } from "lodash";
 import * as queryString from "query-string";
 
-window.$ = $;
 const defaultComponentsConfig = {
     view: false,
     control: false
 }
-window.defaultComponentsConfig = defaultComponentsConfig;
 
 function initDisplay(params) {
     const displayClasses = params.displayClasses || "yx-view, yx-control";
@@ -38,11 +36,13 @@ function initDisplay(params) {
 }
 
 function initLogin() {
+    $("#welcome").text("Welcome");
     $("#login a").text("Login");
     $("#login a").attr(
         "href",
-        `http://${window.location.hostname}:3001/oauth2/authorize?client_id=yanux-demo-app&response_type=token&redirect_uri=${window.location.href}`
+        `http://${location.hostname}:3001/oauth2/authorize?client_id=yanux-demo-app&response_type=token&redirect_uri=${location.href}`
     );
+    $("#login a").off("click");
 }
 
 function setSquareColor(color) {
@@ -60,44 +60,48 @@ function processProxemics(coordinator, proxemics) {
     const localDeviceUuid = coordinator.device.deviceUuid;
     console.log("Proxemics:", proxemics);
     console.log("Local Device UUID:", localDeviceUuid);
-    const componentsDistribution = _.cloneDeep(proxemics);
+    const componentsDistribution = cloneDeep(proxemics);
     let componentsConfig;
     coordinator.getActiveInstances().then(activeInstances => {
-        if (proxemics[localDeviceUuid]) {
-            const viewAndControlDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
-                return caps.view === true && caps.control === true && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+        /**
+         * NOTE:
+         * This way of interacting with proxemics has been removed from the framework.
+         * The way it's presented here should not have compatibility issues, but is as this feature didn't exist.
+         * Since this is the very first and the most primitive example of our framework,
+         * there should be no further efforts into updating this code to moden standards. 
+         * However, this notice should remain here in case we change our minds.
+         */
+        if (proxemics[localDeviceUuid] && proxemics[localDeviceUuid].view !== undefined && proxemics[localDeviceUuid].control !== undefined) {
+            const viewAndControlDevices = pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === true && caps.control === true && some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
             });
-            const viewOnlyDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
-                return caps.view === true && caps.control === false && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+            const viewOnlyDevices = pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === true && caps.control === false && some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
             });
-            const controlOnlyDevices = _.pickBy(proxemics, (caps, deviceUuid) => {
-                return caps.view === false && caps.control === true && _.some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
+            const controlOnlyDevices = pickBy(proxemics, (caps, deviceUuid) => {
+                return caps.view === false && caps.control === true && some(activeInstances, instance => deviceUuid === instance.device.deviceUuid);
             });
-            if (!_.isEmpty(viewOnlyDevices)) {
+            if (!isEmpty(viewOnlyDevices)) {
                 for (let deviceUuid in viewAndControlDevices) {
                     componentsDistribution[deviceUuid].view = false;
                 }
             }
-            if (!_.isEmpty(controlOnlyDevices)) {
+            if (!isEmpty(controlOnlyDevices)) {
                 for (let deviceUuid in viewAndControlDevices) {
                     componentsDistribution[deviceUuid].control = false;
                 }
             }
             componentsConfig = componentsDistribution[localDeviceUuid];
-        } else {
-            componentsConfig = defaultComponentsConfig;
-        }
+        } else { componentsConfig = defaultComponentsConfig; }
+
         console.log("Components Config:", componentsConfig);
-        if (componentsConfig.view) {
-            $(".yx-view").css("display", "block");
-        } else {
-            $(".yx-view").css("display", "none");
-        }
-        if (componentsConfig.control) {
-            $(".yx-control").css("display", "block");
-        } else {
-            $(".yx-control").css("display", "none");
-        }
+
+        if (componentsConfig.view) { $(".yx-view").css("display", "block"); }
+        else { $(".yx-view").css("display", "none"); }
+
+        if (componentsConfig.control) { $(".yx-control").css("display", "block"); }
+        else { $(".yx-control").css("display", "none"); }
+
         $(".yx-always-visible").css("display", "block");
     }).catch(console.log);
 }
@@ -112,10 +116,10 @@ function initCoordinator(coordinator) {
             console.log("User:", coordinator.user)
             $("#welcome").append(coordinator.user.email);
             $("#login a").text("Logout");
-            $("#login a").click(() => {
+            $("#login a").click(e => {
+                e.preventDefault();
                 coordinator.logout();
-                $("#login a").text("Login");
-                setTimeout(initLogin, 100);
+                initLogin();
             })
             setSquareColor(initialData["squareColor"]);
             setCurrentColorText(initialData["squareColor"]);
@@ -143,7 +147,7 @@ function initCoordinator(coordinator) {
         });
 
         processProxemics(coordinator, initialProxemics);
-        coordinator.subscribeProxemics(proxemics => processProxemics(coordinator, proxemics));
+        coordinator.subscribeProxemics(proxemics => processProxemics(coordinator, proxemics.state));
         coordinator.subscribeInstances(instance => {
             console.log('Instances', instance);
             processProxemics(coordinator, coordinator.proxemics.state)
@@ -164,12 +168,12 @@ function main() {
     const params = queryString.parse(location.hash);
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
-        params.brokerUrl || `http://${window.location.hostname}:3002`,
+        params.brokerUrl || `http://${location.hostname}:3002`,
         params.localDeviceUrl || "http://localhost:3003"
     );
-    window.coordinator = coordinator;
-    if (!params.access_token) {
-        sessionStorage.setItem('hash', window.location.hash);
+    if (!params.access_token && !params.token_type) {
+        const hash = queryString.stringify(omit(params, ["access_token", "token_type"]));
+        sessionStorage.setItem("hash", hash)
     }
     initDisplay(params);
     initLogin();

@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "YanuX Demo Application",
   "repository": "github:YanuX-Framework/YanuX-Demo",
+  "private": true,
+  "author": {
+    "name": "Pedro Albuquerque Santos",
+    "email": "pedro@albuquerques.net",
+    "url": "https://pedro.albuquerques.net"
+  },
   "main": "index.js",
   "scripts": {
     "package": "npx webpack",
@@ -13,11 +19,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": {
-    "name": "Pedro Albuquerque Santos",
-    "email": "pedro@albuquerques.net",
-    "url": "https://pedro.albuquerques.net"
-  },
   "license": "AGPL-3.0",
   "dependencies": {
     "serve": "^11.3.2"
@@ -27,7 +28,7 @@
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "npm-run-all": "^4.1.5",
-    "query-string": "^6.13.2",
+    "query-string": "^6.13.4",
     "source-map-loader": "^1.1.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"

@@ -14,7 +14,4 @@ module.exports = {
     ]
   },
   stats: { warningsFilter: [/Failed to parse source map/] },
-  node: {
-    fs: 'empty'
-  }
 };

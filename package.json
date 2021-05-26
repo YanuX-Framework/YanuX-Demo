@@ -28,8 +28,8 @@
     "jquery": "^3.5.1",
     "lodash": "^4.17.21",
     "npm-run-all": "^4.1.5",
-    "query-string": "^6.14.0",
-    "source-map-loader": "^2.0.1",
+    "query-string": "^7.0.0",
+    "source-map-loader": "^3.0.0",
     "webpack": "^5.24.2",
     "webpack-cli": "^4.5.0"
   }

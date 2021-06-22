@@ -169,7 +169,8 @@ function main() {
     console.log("Params:", params);
     const coordinator = new FeathersCoordinator(
         params.brokerUrl || `http://${location.hostname}:3002`,
-        params.localDeviceUrl || "http://localhost:3003"
+        params.localDeviceUrl || "http://localhost:3003",
+        params.app || "yanux-demo-app"
     );
     if (!params.access_token && !params.token_type) {
         const hash = queryString.stringify(omit(params, ["access_token", "token_type"]));
